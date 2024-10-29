@@ -1,68 +1,39 @@
-int Rled= 12;
-int Yled=11;
-int Gled=10;
-int contador = 0;
-int botao = 7;
-int estadobotao = 0;
-int estadosensorP=0;
-int sensorP=A5;
-int flag=0;
-int buzzer=9;
+#include <Adafruit_LiquidCrystal.h>
+Adafruit_LiquidCrystal lcd_1(0);
 
+// Sensors Location
+int sensor1=A5;
+int sensor2=A4;
+int sensor3=A3;
+int sensor4=A2;
+
+// Weight
+int weightsensor1=0;
+int weightsensor2=0;
+int weightsensor3=0;
+int weightsensor4=0;
 
 void setup () {
-  	Serial.begin(9600);
-	pinMode (Rled, OUTPUT );
-    pinMode (Yled, OUTPUT );
-    pinMode (Gled, OUTPUT );
-    pinMode(botao, INPUT_PULLUP);
-    digitalWrite(Rled,LOW);
-    digitalWrite(Yled,LOW);
-    digitalWrite(Gled,LOW);
-    
-}
-
-void loop () {
-  noTone(buzzer);
-  estadosensorP=analogRead(sensorP);
-  Serial.println(estadosensorP);
-  delay(10);
+    Serial.begin(9600); // leave this here
   
-if (estadosensorP<780){        
-  //acende led verde
-    digitalWrite(Gled,HIGH);
-    digitalWrite(Yled,LOW);
-    digitalWrite(Rled,LOW);     
-}                           
-  else if (estadosensorP<833 && estadosensorP>780){
-    //acende led laranja  
-    digitalWrite(Gled,LOW);
-    digitalWrite(Yled,HIGH);
-    digitalWrite(Rled,LOW);     
-    }
-  else {
-    //acende led vermelho e buzzer
-    digitalWrite(Gled,LOW);
-    digitalWrite(Yled,LOW);
-    digitalWrite(Rled,HIGH);
-    tone(buzzer, 440, 200);
-    delay (100);
-}                              
+  	lcd_1.begin(16, 2);
+  	lcd_1.print("Hello World!");
 }
 
-/*
 void loop () {
-  estadobotao=digitalRead(botao);
+  weightsensor1=analogRead(sensor1);
+  weightsensor2=analogRead(sensor2);
+  weightsensor3=analogRead(sensor3);
+  weightsensor4=analogRead(sensor4);
+  Serial.println(weightsensor4);
+  delay(3000);
+  lcd_1.clear();
+  delay(3000);
+  lcd_1.begin(16, 2);
+  lcd_1.print("hello again!");
+}
 
-if (estadobotao==LOW && flag==1){ 
-               
-      flag=0;                  
-      digitalWrite(Rled,HIGH);     
-}                           
-    else if (estadobotao==LOW && flag==0){                        
-      flag=1;                 
-      digitalWrite(Rled,LOW);     
-    }
-    delay(200);  
-}                              
-*/
+
+int medium(int w1, int w2, int w3, int w4) {
+  return 0;
+}
