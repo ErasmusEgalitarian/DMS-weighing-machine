@@ -1,5 +1,5 @@
 #include <Adafruit_LiquidCrystal.h>
-Adafruit_LiquidCrystal lcd_1(0);
+Adafruit_LiquidCrystal lcd_1(7, 8, 9, 10, 11, 12);
 
 // Sensors Location
 int sensor1=A5;
@@ -12,7 +12,6 @@ int weightsensor1=0;
 int weightsensor2=0;
 int weightsensor3=0;
 int weightsensor4=0;
-
 void setup () {
     Serial.begin(9600); // leave this here
   
@@ -25,15 +24,14 @@ void loop () {
   weightsensor2=analogRead(sensor2);
   weightsensor3=analogRead(sensor3);
   weightsensor4=analogRead(sensor4);
-  Serial.println(weightsensor4);
-  delay(3000);
+  delay(200);
   lcd_1.clear();
-  delay(3000);
   lcd_1.begin(16, 2);
-  lcd_1.print("hello again!");
+  lcd_1.print(medium(weightsensor1, weightsensor2, weightsensor3, weightsensor4));
 }
 
 
 int medium(int w1, int w2, int w3, int w4) {
-  return 0;
+  Serial.println((w1+w2+w3+w4)/4);
+  return (w1+w2+w3+w4)/4;
 }
