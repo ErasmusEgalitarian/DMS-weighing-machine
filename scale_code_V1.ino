@@ -19,6 +19,7 @@ void setup() {
   delay(5000);
   //lcd.setCursor(0, 0); 
   //lcd.print(material);      //will add in future
+  //lcd.print(wastepicker);
 }
 
 void loop() {
