@@ -47,7 +47,7 @@ void setup() {
   server.begin();
 
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN); // Scale setup
-  scale.set_scale(6.12);      // Correction factor
+  scale.set_scale(20.21);      // Correction factor
   scale.tare();               // Tare
 
   lcd.clear();
