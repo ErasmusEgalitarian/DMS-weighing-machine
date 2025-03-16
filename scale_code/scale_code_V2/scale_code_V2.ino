@@ -2,9 +2,8 @@
 #include <BluetoothSerial.h>
 #include <HX711.h>
 #include <LiquidCrystal_I2C.h>
-#include <WiFi.h>
 #include <WiFiClient.h>
-
+#include <WiFiNINA.h>  // Or use <WiFi.h>
 #include <cassert>	// Required for assert
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);	 // Display definition
@@ -24,12 +23,12 @@ String wastepicker = "";   // Variable to store the name of the waste picker
 bool isConnected = false;  // Bluetooth connection status
 
 void setup() {
-	Serial.begin(115200);			// Serial communication
+	Serial.begin(115200);			      // Serial communication
 	SerialBT.begin("ESP32_Scale");	// Bluetooth device name
 	Serial.println("Bluetooth started, waiting for connection...");
 
 	WiFi.begin(ssid, password);
-	lcd.init();	 // Display initialization
+	lcd.init();	                    // Display initialization
 	lcd.backlight();
 
 	lcd.setCursor(0, 0);
@@ -50,9 +49,9 @@ void setup() {
 
 	server.begin();
 
-	scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);  // Scale setup
-	scale.set_scale(20.21);							   // Correction factor
-	scale.tare();									   // Tare
+	scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);   // Scale setup
+	scale.set_scale(20.21);							                // Correction factor
+	scale.tare();									                      // Tare
 
 	lcd.clear();
 	lcd.setCursor(0, 0);
@@ -61,6 +60,42 @@ void setup() {
   //Initialising variables for later use
   float weightg = 0;
 }
+
+String sendPostData(String post_data) {
+  String response = "";
+  
+  // Send data to your website
+  // Update with actual server info
+  if (client.connect(server, 1234)) {
+    Serial.println("Connected to server");
+    
+    // Prepare HTTP POST request
+    client.println("POST /data_endpoint HTTP/1.1");     // Make "/data_endpoint" into a variable instead
+    client.println("Host: vistimalik.com:1234");
+    client.println("Content-Type: application/JSON");
+    client.print("Content-Length: ");
+    client.println(post_data.length());
+    client.println();
+    client.println(post_data);  // Send the data
+
+    // Wait for a response
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.print(response);
+        response += c;
+      }
+    }
+
+    client.stop(); // Close the connection
+  } else {
+    Serial.println("Connection failed");
+    response = "Connection failed";
+  }
+
+  return response;
+}
+
 
 void loop() {
 	if (SerialBT.hasClient()) {
@@ -77,6 +112,7 @@ void loop() {
 		// Assumption is that data is in JSON format like this -
 		//  {"trash_type": "palstic/metal/paper", "wastepicker_name": "some
 		//  name", "waste_picker_ID": "22331"}
+    // Assumption - Waste pickers will have to press a button in the BT App to send their data to the scale after connecting to it
 
 		if (SerialBT.avaliable()) {
 			String json_data = "";
@@ -99,8 +135,29 @@ void loop() {
 				lcd.print("Welcome:");
 				lcd.setCursor(0, 1);
 				lcd.print(wastepicker_name);
-				delay(5000) lcd.clear();
+				delay(7000);                      // Update delays later to make it fit as well as possible
+        lcd.clear();
 				lcd.setCursor(0, 0);
+
+      
+        char[] new_json_data;
+        doc["weight"] = weightkg;
+        serializeJson(doc, new_json_data);
+        String response = sendPostData(String(new_json_data));
+        if (response == "OK") {
+          lcd.print("Weight registered");
+          SerialBT.println("OK");
+          delay(5000);                    // Update delays later to make it fit as well as possible
+
+        }
+        else {
+          lcd.print("Error");
+          lcd.setCursor(0, 1);
+          lcd.print("Try again");
+          SerialBT.println("Error");
+          delay(10000);                   // Update delays later to make it fit as well as possible
+
+        }
 			}
 		}
 		catch {
@@ -151,6 +208,6 @@ else {
 // TO DO:
 // - HTTP POST request to API
 // - Fix Wifi Client handling
-// - App via BT sends signal to weight and send data
+// - App via BT sends signal to weight and send data - Make a button in the app that sends their data when pressed.
 // - BT response to App about the weight send to API
 // - Error handling and responses thru BT to App
