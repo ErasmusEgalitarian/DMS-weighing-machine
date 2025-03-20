@@ -1,6 +1,6 @@
 #include <ArduinoJson.h>
 #include <BluetoothSerial.h>
-#include <HX711.h>
+#include <Adafruit_HX711.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFiClient.h>
 #include <WiFiNINA.h>  // Or use <WiFi.h>
@@ -206,7 +206,7 @@ else {
 					// "some name", "waste_picker_ID": "22331", "weight": 123}
 
 // TO DO:
-// - HTTP POST request to API
+// - HTTP POST request to API -- DONE
 // - Fix Wifi Client handling
 // - App via BT sends signal to weight and send data - Make a button in the app that sends their data when pressed.
 // - BT response to App about the weight send to API
